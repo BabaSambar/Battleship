@@ -1,11 +1,10 @@
 #pragma once
 #include <iostream>
-#include <random>
 
-#include "SFML/Graphics.hpp"
-#include "Board.h"
-#include "TextureManager.h"
-#include "MouseIntersect.h"
+#include "StateManager.h"
+#include "MainMenuState.h"
+#include "GameOngoingState.h"
+#include "GameOverState.h"
 
 class GameLoop
 {
@@ -15,6 +14,6 @@ public:
 	void Run();
 
 private:
-
+	sf::RenderWindow m_Window;
 };
 

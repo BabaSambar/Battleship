@@ -134,17 +134,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameLoop.cpp" />
+    <ClCompile Include="GameOngoingState.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="MouseIntersect.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="TurnManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameLoop.h" />
+    <ClInclude Include="GameOngoingState.h" />
+    <ClInclude Include="GameOverState.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MouseIntersect.h" />
     <ClInclude Include="PositionState.h" />
+    <ClInclude Include="StateManager.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="TurnManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\greenship.png" />

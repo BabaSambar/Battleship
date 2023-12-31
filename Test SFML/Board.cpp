@@ -33,7 +33,6 @@ std::vector<sf::Texture*> GetRandomShipTexture()
 		Textures.push_back(&TextureManager::GetTexture("res/yellowship_destroyed.png"));
 		break;
 	default:
-		std::cout << "CANNOT RETURN ANY TEXTURE.\n";
 		break;
 	}
 	return Textures;
@@ -93,7 +92,13 @@ bool Board::PlaceShip(int ShipLength)
 // Initialize tile sizes and positions
 Board::Board(int BoardPositionX, int BoardPositionY, int Size, User User)
 {
+	// Debug
+	this->x = 0;
+	this->y = 0;
+
 	this->m_User = User;
+	this->m_UserPoints = 0;
+	this->m_UserTurn = false;
 	this->m_BoardPositionX = BoardPositionX;
 	this->m_BoardPositionY = BoardPositionY;
 	this->m_BoardSize = Size;
@@ -120,7 +125,8 @@ Board::Board(int BoardPositionX, int BoardPositionY, int Size, User User)
 		for (int j = 0; j < 10; j++)
 		{
 			this->m_Board[i][j].setSize(sf::Vector2f(TileSize, TileSize));
-			this->m_Board[i][j].setPosition(sf::Vector2f(BoardPositionX + (j * TileSize), BoardPositionY + (i * TileSize)));
+			this->m_Board[i][j].setPosition(sf::Vector2f(BoardPositionX + (j * TileSize)
+				, BoardPositionY + (i * TileSize)));
 			this->m_Board[i][j].setTexture(&TextureManager::GetTexture("res/water.png"));
 		}
 	}
@@ -149,7 +155,7 @@ Board::Board(int BoardPositionX, int BoardPositionY, int Size, User User)
 }
 
 // Draw the tiles
-void Board::Draw(sf::RenderWindow& window, sf::Event event, sf::Vector2i MousePosition, bool YourTurn)
+void Board::Update(sf::RenderWindow* window, sf::Event event)
 {
 	// Update the display board
 	for (int i = 0; i < 10; i++)
@@ -158,7 +164,8 @@ void Board::Draw(sf::RenderWindow& window, sf::Event event, sf::Vector2i MousePo
 		{
 			sf::Vector2i Position(i, j);
 			// If tile is intact
-			if (this->m_BoardVisible[i][j] == PositionStateVisible::Intact && this->m_HiddenBoard[i][j] != PositionStateHidden::False)
+			if (this->m_BoardVisible[i][j] == PositionStateVisible::Intact
+				&& this->m_HiddenBoard[i][j] != PositionStateHidden::False)
 			{
 				sf::Texture* ShipTexture = this->TextureMap[this->m_HiddenBoard[i][j]][0];
 				this->m_Board[i][j].setTexture(ShipTexture);
@@ -183,28 +190,35 @@ void Board::Draw(sf::RenderWindow& window, sf::Event event, sf::Vector2i MousePo
 			}
 		}
 	}
-	// Reset the board background color
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-		this->m_Board[i][j].setFillColor(sf::Color::White);
-		}
-	}
+
 	// Check if mouse intersects and if a tile needs to be revealed
-	if (MouseIntersect::Intersects(sf::Vector2f(this->m_BoardPositionX, this->m_BoardPositionY)
-		, sf::Vector2f(this->m_BoardSize, this->m_BoardSize), MousePosition))
+	if (MouseIntersect::Intersects(this->GetPosition()
+		, this->GetSize(), sf::Mouse::getPosition(*window)) && this->m_User == User::AI)
 	{
-		int TilePositionX = (MousePosition.y - this->m_BoardPositionY) / (this->m_BoardSize / 10);
-		int TilePositionY = (MousePosition.x - this->m_BoardPositionX) / (this->m_BoardSize / 10);
+		int TilePositionX = (sf::Mouse::getPosition(*window).y -
+			this->GetPosition().y) / (this->GetSize().x / 10);
+		int TilePositionY = (sf::Mouse::getPosition(*window).x -
+			this->GetPosition().x) / (this->GetSize().y / 10);
 		// Update tile for each frame when mouse intersects
 		if (MouseIntersect::Intersects(this->m_Board[TilePositionX][TilePositionY].getPosition()
-			, sf::Vector2f(this->m_BoardSize / 10, this->m_BoardSize / 10), MousePosition))
+			, sf::Vector2f(this->GetSize().x / 10, this->GetSize().y / 10),
+			sf::Mouse::getPosition(*window)))
 		{
 			this->m_Board[TilePositionX][TilePositionY].setFillColor(sf::Color(53, 201, 242, 255));
 		}
+		// Reset the board background color
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 10; j++)
+			{
+				// Don't reset tile color if mouse hovers over it
+				if (i == TilePositionX && j == TilePositionY) continue;
+				this->m_Board[i][j].setFillColor(sf::Color::White);
+			}
+		}
 		// Reveal tile if it is clicked
-		if(event.type == sf::Event::MouseButtonReleased && YourTurn)
+		if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left 
+			&& TurnManager::GetUserTurn() == User::Player)
 		{
 			if (TilePositionX <= 9 && TilePositionY <= 9)
 			{
@@ -212,74 +226,165 @@ void Board::Draw(sf::RenderWindow& window, sf::Event event, sf::Vector2i MousePo
 			}
 		}
 	}
-	// Draw board
+	else if (this->m_User == User::Player && TurnManager::GetUserTurn() == User::AI)
+	{
+		// ADD SMART AI DECISION MAKING
+		// DEBUG: TEMP SOLUTION
+		this->RevealTile(this->x, this->y);
+	}
+
+	// Check if all ships are completely destroyed
+	bool AllShipsDestroyed = true;
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			window.draw(this->m_Board[i][j]);
+			// Player board - ship is intact
+			if ((this->m_HiddenBoard[i][j] != PositionStateHidden::False
+				&& this->m_BoardVisible[i][j] == PositionStateVisible::Intact)
+				|| (this->m_HiddenBoard[i][j] != PositionStateHidden::False
+					&& this->m_BoardVisible[i][j] == PositionStateVisible::Blank))
+			{
+				AllShipsDestroyed = false & AllShipsDestroyed;
+			}
 		}
 	}
+	TurnManager::SetGameOverStatus(AllShipsDestroyed);
 }
 
 // Reveal visible tile status
 void Board::RevealTile(int x, int y)
 {
-	//	Stop if tile is not blank
-	if (this->m_BoardVisible[x][y] != PositionStateVisible::Blank)
-	{
-		if (this->m_User != User::Player || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
+	if (this->m_User == User::Player)
+	{		
+		//	Stop if tile is not blank
+		if (this->m_BoardVisible[x][y] != PositionStateVisible::Blank)
 		{
-			return;
-		}
-	}
-	// Check if tile is part of any ship
-	if (this->m_HiddenBoard[x][y] != PositionStateHidden::False)
-	{
-		// Check if ship containing tile is completely destroyed
-		PositionStateHidden TileState = this->m_HiddenBoard[x][y];
-		bool ShipCompletelyDestroyed = true;
-		for (int i = 0; i < 10; i++)
-		{
-			for (int j = 0; j < 10;j++)
+			if (this->m_User != User::Player || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
 			{
-				if (this->m_HiddenBoard[i][j] != TileState) continue;
-				if (i == x && j == y) continue;
-				if (this->m_BoardVisible[i][j] == PositionStateVisible::Destroying)
-				{
-					ShipCompletelyDestroyed = true & ShipCompletelyDestroyed;
-				}
-				else
-				{
-					ShipCompletelyDestroyed = false & ShipCompletelyDestroyed;
-				}
+				std::cout << "invalid tile\n";
+				return;
 			}
 		}
-		// Update the visible map
-		if (ShipCompletelyDestroyed)
+		// Check if tile is part of any ship
+		if (this->m_HiddenBoard[x][y] != PositionStateHidden::False)
 		{
+			// Check if ship containing tile is completely destroyed
+			PositionStateHidden TileState = this->m_HiddenBoard[x][y];
+			bool ShipCompletelyDestroyed = true;
 			for (int i = 0; i < 10; i++)
 			{
 				for (int j = 0; j < 10;j++)
 				{
-					if (this->m_HiddenBoard[i][j] == TileState)
+					if (this->m_HiddenBoard[i][j] != TileState) continue;
+					if (i == x && j == y) continue;
+					if (this->m_BoardVisible[i][j] == PositionStateVisible::Destroying)
 					{
-						this->m_BoardVisible[i][j] = PositionStateVisible::Destroyed;
+						ShipCompletelyDestroyed = true & ShipCompletelyDestroyed;
+					}
+					else
+					{
+						ShipCompletelyDestroyed = false & ShipCompletelyDestroyed;
 					}
 				}
 			}
+			// Update the visible map
+			if (ShipCompletelyDestroyed)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					for (int j = 0; j < 10;j++)
+					{
+						if (this->m_HiddenBoard[i][j] == TileState)
+						{
+							this->m_BoardVisible[i][j] = PositionStateVisible::Destroyed;
+						}
+					}
+				}
+				this->m_UserPoints += 2;
+			}
+			else
+			{
+				this->m_BoardVisible[x][y] = PositionStateVisible::Destroying;
+				this->m_UserPoints++;
+			}
+
 		}
+		// Tile contains water
 		else
 		{
-			this->m_BoardVisible[x][y] = PositionStateVisible::Destroying;
+			this->m_BoardVisible[x][y] = PositionStateVisible::Revealed;
 		}
-
+		// DEBUG: TEMP SOLUTION
+		this->x++;
+		if (this->x > 9)
+		{
+			this->x = 0;
+			this->y++;
+		}
 	}
-	// Tile contains water
-	else
+	else if(this->m_User == User::AI)
 	{
-		this->m_BoardVisible[x][y] = PositionStateVisible::Revealed;
+		//	Stop if tile is not blank
+		if (this->m_BoardVisible[x][y] != PositionStateVisible::Blank)
+		{
+			if (this->m_User != User::Player || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
+			{
+				std::cout << "invalid tile\n";
+				return;
+			}
+		}
+		// Check if tile is part of any ship
+		if (this->m_HiddenBoard[x][y] != PositionStateHidden::False)
+		{
+			// Check if ship containing tile is completely destroyed
+			PositionStateHidden TileState = this->m_HiddenBoard[x][y];
+			bool ShipCompletelyDestroyed = true;
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10;j++)
+				{
+					if (this->m_HiddenBoard[i][j] != TileState) continue;
+					if (i == x && j == y) continue;
+					if (this->m_BoardVisible[i][j] == PositionStateVisible::Destroying)
+					{
+						ShipCompletelyDestroyed = true & ShipCompletelyDestroyed;
+					}
+					else
+					{
+						ShipCompletelyDestroyed = false & ShipCompletelyDestroyed;
+					}
+				}
+			}
+			// Update the visible map
+			if (ShipCompletelyDestroyed)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					for (int j = 0; j < 10;j++)
+					{
+						if (this->m_HiddenBoard[i][j] == TileState)
+						{
+							this->m_BoardVisible[i][j] = PositionStateVisible::Destroyed;
+						}
+					}
+				}
+				this->m_UserPoints += 2;
+			}
+			else
+			{
+				this->m_BoardVisible[x][y] = PositionStateVisible::Destroying;
+				this->m_UserPoints++;
+			}
+
+		}
+		// Tile contains water
+		else
+		{
+			this->m_BoardVisible[x][y] = PositionStateVisible::Revealed;
+		}
 	}
+	TurnManager::FlipTurn();
 }
 
 sf::Vector2f Board::GetPosition()

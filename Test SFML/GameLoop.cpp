@@ -1,42 +1,30 @@
 #include "GameLoop.h"
 
+// Start game from main menu state
 GameLoop::GameLoop()
 {
-
-
+	srand(time(0));
+	m_Window.create(sf::VideoMode(1050, 650), "Battleship", sf::Style::Close);
+	m_Window.setFramerateLimit(60);
+	m_Window.setKeyRepeatEnabled(false);
+	StateManager::AddState(std::make_unique<MainMenuState>(&m_Window));
 }
 
+// Include all game logic here
 void GameLoop::Run()
 {
-	sf::RenderWindow window(sf::VideoMode(1050, 500), "Battleship");
-	window.setFramerateLimit(60);
-	window.setKeyRepeatEnabled(false);
-	std::srand(345);
-
-	sf::Vector2i MousePosition;
-
-	Board PlayerBoard(0, 0, 500, User::Player);
-	Board AIBoard(550, 0, 500, User::AI);
-
-	// Game loop
-	while (window.isOpen())
+	while (m_Window.isOpen())
 	{
-		MousePosition = sf::Mouse::getPosition(window);
-		sf::Event event;
-		while (window.pollEvent(event))
+		StateManager::ProcessChanges();
+		if (!StateManager::Empty())
 		{
-			// Events
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-			}
+			StateManager::GetTopState()->HandleEvents();
+			StateManager::GetTopState()->Update();
+			StateManager::GetTopState()->Draw();
 		}
-		window.clear(sf::Color(53, 201, 242, 255));
-
-		PlayerBoard.Draw(window, event, MousePosition, true);
-		AIBoard.Draw(window, event, MousePosition, true);
-
-
-		window.display();
+		else
+		{
+			m_Window.close();
+		}
 	}
 }

@@ -8,14 +8,7 @@
 #include "TextureManager.h"
 #include "MouseIntersect.h"
 #include "PositionState.h"
-
-// Flags for user identification
-enum class User : int
-{
-	Player = 0,
-	AI = 1
-};
-
+#include "TurnManager.h"
 
 // Flags for display status
 enum class BoardDisplayState: int
@@ -28,13 +21,13 @@ enum class BoardDisplayState: int
 class Board
 {
 public:
+	int m_UserPoints;
+	bool m_UserTurn;
 	// Board of Size x Size pixels
 	Board(int PositionX, int PositionY, int Size, User user=User::Player);
 
 	// Draw each tile
-	void Draw(sf::RenderWindow& window, sf::Event event, sf::Vector2i MousePosition = sf::Vector2i(0, 0), bool YourTurn = false);
-	// Check if mouse button is clicked on tile
-	void OnMouseClick(sf::Vector2i MousePosition);
+	void Update(sf::RenderWindow* window, sf::Event event);
 
 	// Return display board class position relative to window
 	sf::Vector2f GetPosition();
@@ -46,10 +39,10 @@ public:
 	// Reveal visible tile status
 	void RevealTile(int TilePositionX, int TilePositionY);
 
-private:
-
-	// Board to display on screen
+	// Board to display on screen, public for access through state class
 	sf::RectangleShape m_Board[10][10];
+private:
+	int x, y;
 	User m_User;
 
 	int ShipCount = 1;
