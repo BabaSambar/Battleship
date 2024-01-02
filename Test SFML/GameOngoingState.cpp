@@ -1,7 +1,7 @@
 #include "GameOngoingState.h"
 
 GameOngoingState::GameOngoingState(sf::RenderWindow* window) : m_Paused(false), m_Window(window)
-	, m_PlayerBoard(0, 100, 500, User::Player), m_AIBoard(550, 100, 500, User::AI), m_StartTimer(false), m_GameOver(false)
+	, m_PlayerBoard(0, 100, 500), m_AIBoard(550, 100, 500), m_StartTimer(false), m_GameOver(false)
 {
 	sf::Vector2f position;
 	// Font

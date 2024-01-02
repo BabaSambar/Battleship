@@ -10,24 +10,14 @@
 #include "PositionState.h"
 #include "TurnManager.h"
 
-// Flags for display status
-enum class BoardDisplayState: int
-{
-	Disabled = 0,
-	Enabled = 1
-};
-
 // Board class called in Game Loop
 class Board
 {
 public:
 	int m_UserPoints;
-	bool m_UserTurn;
 	// Board of Size x Size pixels
-	Board(int PositionX, int PositionY, int Size, User user=User::Player);
+	Board(int BoardPositionX, int BoardPositionY, int Size);
 
-	// Draw each tile
-	void Update(sf::RenderWindow* window, sf::Event event);
 
 	// Return display board class position relative to window
 	sf::Vector2f GetPosition();
@@ -36,16 +26,11 @@ public:
 
 	// Display hidden and visible board structure
 	void CoutBoardStructure();
-	// Reveal visible tile status
-	void RevealTile(int TilePositionX, int TilePositionY);
 
 	// Board to display on screen, public for access through state class
 	sf::RectangleShape m_Board[10][10];
-private:
-	int x, y;
-	User m_User;
 
-	int ShipCount = 1;
+	int m_ShipCount;
 	// [Intact, Destroying, Destroyed]
 	std::map<PositionStateHidden, std::vector<sf::Texture*>> TextureMap;
 
@@ -58,4 +43,3 @@ private:
 	// Place a ship on hidden board structure
 	bool PlaceShip(int ShipLength);
 };
-

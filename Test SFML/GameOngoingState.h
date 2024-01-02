@@ -4,7 +4,8 @@
 #include "StateManager.h"
 #include "MouseIntersect.h"
 #include "FontManager.h"
-#include "Board.h"
+#include "PlayerBoard.h"
+#include "AIBoard.h"
 #include "TurnManager.h"
 
 class GameOngoingState : public GameState
@@ -29,9 +30,9 @@ private:
 
 	sf::Font m_SegoeUIFont;
 	// Player board
-	Board m_PlayerBoard;
+	PlayerBoard m_PlayerBoard;
 	// AI board
-	Board m_AIBoard;
+	AIBoard m_AIBoard;
 
 	// Player turn card
 	sf::RectangleShape m_PlayerTurnRect;
