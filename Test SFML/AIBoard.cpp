@@ -104,7 +104,6 @@ void AIBoard::RevealTile(int x, int y)
 	{
 		if (TurnManager::GetUserTurn() == User::AI || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
 		{
-			std::cout << "invalid tile\n";
 			return;
 		}
 	}

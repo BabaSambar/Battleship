@@ -64,6 +64,63 @@ void PlayerBoard::Update(sf::RenderWindow* window, sf::Event event)
 	// DEBUG: TEMP SOLUTION
 	if (TurnManager::GetUserTurn() == User::AI)
 	{
+		// Set default values for heatmap
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 10; j++)
+			{
+				this->m_HeatMap[i][j] = 0;
+			}
+		}
+
+		// CHECK PROXIMITY FIRST!!!
+
+		// Execute for each ship and update heatmap
+		for (int i = 0; i < 5; i++)
+		{
+			int ShipIndex= i;
+			int ShipLength;
+			if (ShipIndex < 3) ShipLength = ShipIndex - 1;
+			else ShipLength = ShipIndex;
+
+			// Check if ship of ShipLength is destroyed
+			bool ShipIntact = true;
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10; j++)
+				{
+					if (this->m_BoardVisible[i][j] == PositionStateVisible::Destroyed)
+					{
+						ShipIntact = false & ShipIntact;
+					}
+				}
+			}
+			if (!ShipIntact) continue;
+
+			// Check horizontal rows to update heatmap
+			for (int i = 0; i < 10; i++)
+			{
+				int x = 0;  // Two pointer approach for each row
+				while (x < 10)
+				{
+					bool Proceed = true;
+					// Scan
+					for (int y = x; y < ShipLength; y++)
+					{
+						if (this->m_BoardVisible[i][y] != PositionStateVisible::Blank) x += ShipLength;
+					}
+					if (!Proceed) continue; x++;
+					// Add to heatmap
+					for (int j = 0; j < ShipLength; j++)
+					{
+						// WTF IS THIS WHAT AM I DOING WHY IS THIS INSIDE A WHILE LOOP WHY WHAT HOW
+					}
+				}
+			}
+
+		}
+
+
 		this->RevealTile(this->x, this->y);
 	}
 
@@ -94,7 +151,6 @@ void PlayerBoard::RevealTile(int x, int y)
 	{
 		if (TurnManager::GetUserTurn() == User::Player || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
 		{
-			std::cout << "invalid tile\n";
 			return;
 		}
 	}

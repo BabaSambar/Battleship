@@ -104,11 +104,11 @@ m_BoardPositionX(BoardPositionX), m_BoardPositionY(BoardPositionY), m_BoardSize(
 	}
 
 	// Place 5,4,3,3,2 length ships
-	while (!this->PlaceShip(5));
-	while (!this->PlaceShip(4));
-	while (!this->PlaceShip(3));
-	while (!this->PlaceShip(3));
 	while (!this->PlaceShip(2));
+	while (!this->PlaceShip(3));
+	while (!this->PlaceShip(3));
+	while (!this->PlaceShip(4));
+	while (!this->PlaceShip(5));
 
 	// Set display board texture
 	int TileSize = Size / 10;

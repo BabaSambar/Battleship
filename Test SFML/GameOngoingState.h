@@ -26,8 +26,8 @@ private:
 	bool m_StartTimer;
 
 	sf::RenderWindow* m_Window;
-	// Font for all texts
 
+	// Font for all texts
 	sf::Font m_SegoeUIFont;
 	// Player board
 	PlayerBoard m_PlayerBoard;

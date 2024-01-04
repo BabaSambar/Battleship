@@ -14,4 +14,7 @@ public:
 
 	// Reveal visible tile status
 	void RevealTile(int TilePositionX, int TilePositionY);
+
+private:
+	int m_HeatMap[10][10];
 };

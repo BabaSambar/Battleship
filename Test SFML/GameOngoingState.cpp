@@ -128,8 +128,8 @@ void GameOngoingState::Update()
 
 	if (this->m_GameOver)
 	{
-		std::cout << "Game's over\n";
-		//StateManager::AddState(std::make_unique<GameOverState>());
+		StateManager::AddState(std::make_unique<GameOverState>(this->m_Window));
+		this->m_GameOver = false;
 	}
 }
 
