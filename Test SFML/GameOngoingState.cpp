@@ -4,6 +4,7 @@ GameOngoingState::GameOngoingState(sf::RenderWindow* window) : m_Paused(false), 
 	, m_PlayerBoard(0, 100, 500), m_AIBoard(550, 100, 500), m_StartTimer(false), m_GameOver(false)
 {
 	sf::Vector2f position;
+	TurnManager::SetGameOverStatus(false);
 	// Font
 	this->m_SegoeUIFont = FontManager::GetFont("fonts/segoeui.ttf");
 
@@ -97,7 +98,6 @@ void GameOngoingState::Update()
 	this->m_PlayerPointsText.setString(std::to_string(this->m_PlayerBoard.m_UserPoints));
 	position.x = this->m_AIBoard.GetPosition().x;
 	position.y = this->m_PlayerBoard.GetPosition().y - this->m_PlayerPointsText.getLocalBounds().height - 20;
-
 	this->m_PlayerPointsText.setPosition(position);
 	// Update AI points
 	this->m_AIPointsText.setString(std::to_string(this->m_AIBoard.m_UserPoints));
@@ -125,10 +125,10 @@ void GameOngoingState::Update()
 		this->m_PlayerTimer = TurnManager::m_PlayerTimerPermanent;
 		this->m_PlayerTimeText.setString(std::to_string(this->m_PlayerTimer));
 	}
-
+	// Add game over state
 	if (this->m_GameOver)
 	{
-		StateManager::AddState(std::make_unique<GameOverState>(this->m_Window));
+		StateManager::AddState(std::make_unique<GameOverState>(this->m_Window, TurnManager::GetUserTurn()));
 		this->m_GameOver = false;
 	}
 }

@@ -2,7 +2,6 @@
 
 AIBoard::AIBoard(int BoardPositionX, int BoardPositionY, int Size) : Board(BoardPositionX, BoardPositionY, Size)
 {
-
 }
 
 // Draw the tiles
@@ -41,18 +40,14 @@ void AIBoard::Update(sf::RenderWindow* window, sf::Event event)
 			}
 		}
 	}
-
 	// Check if mouse intersects and if a tile needs to be revealed
 	if (MouseIntersect::Intersects(this->GetPosition(), this->GetSize(), sf::Mouse::getPosition(*window)))
 	{
-		int TilePositionX = (sf::Mouse::getPosition(*window).y -
-			this->GetPosition().y) / (this->GetSize().x / 10);
-		int TilePositionY = (sf::Mouse::getPosition(*window).x -
-			this->GetPosition().x) / (this->GetSize().y / 10);
+		int TilePositionX = (sf::Mouse::getPosition(*window).y - this->GetPosition().y) / (this->GetSize().x / 10);
+		int TilePositionY = (sf::Mouse::getPosition(*window).x - this->GetPosition().x) / (this->GetSize().y / 10);
 		// Update tile for each frame when mouse intersects
 		if (MouseIntersect::Intersects(this->m_Board[TilePositionX][TilePositionY].getPosition()
-			, sf::Vector2f(this->GetSize().x / 10, this->GetSize().y / 10),
-			sf::Mouse::getPosition(*window)))
+			, sf::Vector2f(this->GetSize().x / 10, this->GetSize().y / 10), sf::Mouse::getPosition(*window)))
 		{
 			this->m_Board[TilePositionX][TilePositionY].setFillColor(sf::Color(53, 201, 242, 255));
 		}
@@ -76,14 +71,12 @@ void AIBoard::Update(sf::RenderWindow* window, sf::Event event)
 			}
 		}
 	}
-
 	// Check if all ships are completely destroyed
 	bool AllShipsDestroyed = true;
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			// Player board - ship is intact
 			if ((this->m_HiddenBoard[i][j] != PositionStateHidden::False
 				&& this->m_BoardVisible[i][j] == PositionStateVisible::Intact)
 				|| (this->m_HiddenBoard[i][j] != PositionStateHidden::False
@@ -93,13 +86,13 @@ void AIBoard::Update(sf::RenderWindow* window, sf::Event event)
 			}
 		}
 	}
-	TurnManager::SetGameOverStatus(AllShipsDestroyed);
+	if(AllShipsDestroyed) TurnManager::SetGameOverStatus(AllShipsDestroyed);
 }
 
 // Reveal visible tile status
 void AIBoard::RevealTile(int x, int y)
 {
-	//	Stop if tile is not blank
+	//	Stop if tile to be revealed is not blank
 	if (this->m_BoardVisible[x][y] != PositionStateVisible::Blank)
 	{
 		if (TurnManager::GetUserTurn() == User::AI || this->m_BoardVisible[x][y] != PositionStateVisible::Intact)
@@ -107,7 +100,6 @@ void AIBoard::RevealTile(int x, int y)
 			return;
 		}
 	}
-
 	// Check if tile is part of any ship
 	if (this->m_HiddenBoard[x][y] != PositionStateHidden::False)
 	{

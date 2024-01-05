@@ -12,7 +12,7 @@ class StateManager
 public:
 	StateManager();
 	// Add state to state stack
-	static void AddState(std::unique_ptr<GameState> NewState, bool ReplaceState = false);
+	static void AddState(std::unique_ptr<GameState> NewState, bool ReplaceState = true);
 	// Remove state from top of state stack
 	static void RemoveState();
 	// Process all changes of statemanager

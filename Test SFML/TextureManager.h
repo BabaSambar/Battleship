@@ -6,7 +6,7 @@
 class TextureManager
 {
 public:
-	// Initializ all textures
+	// Initialize all textures
 	TextureManager();
 
 	// Return address of a texture already initialized in static class

@@ -1,6 +1,6 @@
 #include "Board.h"
 
-// Return a random (not really) ship texture for initialization
+// Return a random (not really) ship texture* for initialization
 std::vector<sf::Texture*> GetRandomShipTexture()
 {
 	std::vector<sf::Texture*> Textures;
@@ -55,7 +55,6 @@ bool Board::PlaceShip(int ShipLength)
 		startRow = rand() % (10 - ShipLength);
 		startCol = rand() % 10;
 	}
-
 	// Prevent ship overlap by returning false for each overlap by returning if tile already placed
 	for (int i = 0; i < ShipLength; i++)
 	{
@@ -91,7 +90,7 @@ bool Board::PlaceShip(int ShipLength)
 
 // Initialize tile sizes and positions
 Board::Board(int BoardPositionX, int BoardPositionY, int Size) : m_UserPoints(0), m_ShipCount(1),
-m_BoardPositionX(BoardPositionX), m_BoardPositionY(BoardPositionY), m_BoardSize(Size)
+	m_BoardPositionX(BoardPositionX), m_BoardPositionY(BoardPositionY), m_BoardSize(Size)
 {
 	// Set default value for visible and hidden board
 	for (int i = 0; i < 10; i++)
@@ -102,14 +101,12 @@ m_BoardPositionX(BoardPositionX), m_BoardPositionY(BoardPositionY), m_BoardSize(
 			this->m_HiddenBoard[i][j] = PositionStateHidden::False;
 		}
 	}
-
 	// Place 5,4,3,3,2 length ships
 	while (!this->PlaceShip(2));
 	while (!this->PlaceShip(3));
 	while (!this->PlaceShip(3));
 	while (!this->PlaceShip(4));
 	while (!this->PlaceShip(5));
-
 	// Set display board texture
 	int TileSize = Size / 10;
 	for (int i = 0; i < 10; i++)
@@ -117,12 +114,10 @@ m_BoardPositionX(BoardPositionX), m_BoardPositionY(BoardPositionY), m_BoardSize(
 		for (int j = 0; j < 10; j++)
 		{
 			this->m_Board[i][j].setSize(sf::Vector2f(TileSize, TileSize));
-			this->m_Board[i][j].setPosition(sf::Vector2f(BoardPositionX + (j * TileSize)
-				, BoardPositionY + (i * TileSize)));
+			this->m_Board[i][j].setPosition(sf::Vector2f(BoardPositionX + (j * TileSize), BoardPositionY + (i * TileSize)));
 			this->m_Board[i][j].setTexture(&TextureManager::GetTexture("res/water.png"));
 		}
 	}
-
 	// Load ship intact, destroying and destroyed textures
 	PositionStateHidden ShipIndex;
 	for (int i = 1; i <= 5; i++)

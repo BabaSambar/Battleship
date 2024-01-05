@@ -2,7 +2,6 @@
 
 StateManager::StateManager()
 {
-
 }
 
 bool StateManager::m_add = false;
@@ -15,7 +14,6 @@ void StateManager::AddState(std::unique_ptr<GameState> NewState, bool ReplaceSta
 {
 	m_add = true;
 	m_NewState = std::move(NewState);
-
 	m_replace = ReplaceState;
 }
 

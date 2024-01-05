@@ -8,7 +8,6 @@ MainMenuState::MainMenuState(sf::RenderWindow* window) : m_Paused(false), m_Star
 	// Font
 	this->m_SegoeUIFont = FontManager::GetFont("fonts/segoeui.ttf");
 
-
 	// Battleship heading text initialize
 	this->m_HeadingText.setString("Battleship");
 	this->m_HeadingText.setFont(this->m_SegoeUIFont);
@@ -45,7 +44,6 @@ MainMenuState::MainMenuState(sf::RenderWindow* window) : m_Paused(false), m_Star
 	this->m_HelpButtonRect.setPosition(position);
 	this->m_HelpButtonRect.setFillColor(sf::Color(153, 217, 234, 255));
 
-
 	// Help button text
 	this->m_HelpButtonText.setString("How to play");
 	this->m_HelpButtonText.setFont(this->m_SegoeUIFont);
@@ -54,7 +52,6 @@ MainMenuState::MainMenuState(sf::RenderWindow* window) : m_Paused(false), m_Star
 	position.y = position.y + (this->m_HelpButtonRect.getLocalBounds().height / 2) - (this->m_HelpButtonText.getLocalBounds().height / 2);
 	this->m_HelpButtonText.setPosition(position);
 	this->m_HelpButtonText.setFillColor(sf::Color::Black);
-
 }
 
 void MainMenuState::HandleEvents()
@@ -120,7 +117,7 @@ void MainMenuState::Update()
 	}
 	if (this->m_GetHelp)
 	{
-		std::cout << "Help kara\n";
+		std::cout << "Help button pressed.\n";
 		this->m_GetHelp = false;
 	}
 }
